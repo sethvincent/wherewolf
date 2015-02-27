@@ -348,11 +348,20 @@
         feature.geometry.coordinates
       ];
     }
-
-    //Don't check inner rings
-    var outer = feature.geometry.type === "Polygon" ? [feature.geometry.coordinates[0]] : feature.geometry.coordinates.map(function(f){
-      return f[0];
-    });
+    
+    var outer;
+    
+    if (feature.geometry.type === 'GeometryCollection') {
+      outer = feature.geometry.geometries[0].coordinates[0];
+    }
+    else if (feature.geometry.type === "Polygon") {
+      outer = [feature.geometry.coordinates[0]]
+    }
+    else {
+      outer = feature.geometry.coordinates.map(function(f){
+        return f[0];
+      });
+    }
 
     //For each point, extend bounds as needed
     var bounds = [[Infinity,Infinity],[-Infinity,-Infinity]];
